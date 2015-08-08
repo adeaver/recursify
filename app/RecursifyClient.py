@@ -12,7 +12,7 @@ class RecursifyClient():
         self.USERNAME = None
         self.SCOPE = "playlist-modify-private user-library-read"
 
-    def generate_redirect_url(self):
+    def get_redirect_url(self):
         base_url = "https://accounts.spotify.com/authorize?"
         params = {"scope":self.SCOPE, "redirect_uri":self.REDIRECT_URI, "response_type":"code", "client_id":self.CLIENT_ID}
         base_url += urllib.urlencode(params)

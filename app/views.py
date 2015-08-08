@@ -15,4 +15,14 @@ def index():
 
 @app.route('/verifydata', methods=['GET'])
 def verify():
-	print "Verify Data"
+    if request.method == "GET":
+        if "code" in request.args:
+            token = client.get_access_token(request.args["code"])
+            client.initialize_spotify_client(token)
+        else:
+            redirect_url = client.get_redirect_url()
+            return redirect(redirect_url)
+
+        if client.is_verified():
+            return "Verified"
+    return "Bad Request"
