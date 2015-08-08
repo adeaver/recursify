@@ -32,6 +32,6 @@ def verify():
 def select():
     if request.method == "GET":
         if "search_artist" in request.args:
-            print client.select_artist(request.args["search_artist"])
-            return "Good Request"
+            artists = client.select_artist(request.args["search_artist"])
+            return ', '.join([key for key in artists])
     return "Bad Request"
