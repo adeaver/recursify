@@ -69,6 +69,7 @@ class RecursifyClient():
     def set_playlist_title(self, artist_name):
         self.PLAYLIST_TITLE = "Recursify Playlist Based on " + artist_name
 
+
     def get_all_related(self, artist_id, depth):
         if self.SP_CLIENT is not None:
             related = []

@@ -16,16 +16,18 @@ def index():
 @app.route('/verifydata', methods=['GET'])
 def verify():
     if request.method == "GET":
+        if client.is_verified():
+            return render_template("verify.html", name=client.get_user_first_name())
+
         if "code" in request.args:
-            print request.args["code"]
             token = client.get_access_token(request.args["code"])
             client.initialize_spotify_client(token)
+            if client.is_verified():
+                return render_template("verify.html", name=client.get_user_first_name())
         else:
             redirect_url = client.get_redirect_url()
             return redirect(redirect_url)
 
-        if client.is_verified():
-            return render_template("verify.html", name=client.get_user_first_name())
     return "Bad Request"
 
 @app.route('/selectartist', methods=['GET'])
@@ -33,5 +35,5 @@ def select():
     if request.method == "GET":
         if "search_artist" in request.args:
             artists = client.select_artist(request.args["search_artist"])
-            return ', '.join([key for key in artists])
+            return render_template("select.html", artists=artists)
     return "Bad Request"
