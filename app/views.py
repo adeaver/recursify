@@ -37,3 +37,10 @@ def select():
             artists = client.select_artist(request.args["search_artist"])
             return render_template("select.html", artists=artists)
     return "Bad Request"
+
+@app.route('/buildplaylist', methods=['GET'])
+def build():
+    if request.method == "GET":
+        if "selection_uri" in request.args and "selection_name" in request.args:
+            return request.args["selection_name"] + " -- " + request.args["selection_uri"]
+    return "Bad Request"

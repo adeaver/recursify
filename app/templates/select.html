@@ -18,17 +18,23 @@
 
 		<!-- Header -->
 			<header id="header">
-				<h1>Hello</h1>
-				<p>Start by telling us an artist that you like!</p>
+				<h1>We've found these artists...</h1>
 			</header>
 
 		<!-- Signup Form -->
+		<table style="overflow-x:scroll;">
+			<tr>
 			{% for key in artists %}
-				<form method="get" action="">
-					<input type="hidden" name="selection" value="{{artists[key]}}" />
-					<input type="submit" value="{{key}}" />
-				</form>
+				<td style="padding-right:15px;">
+					<form method="get" action="/buildplaylist">
+						<input type="hidden" name="selection_uri" value="{{artists[key]}}" />
+						<input type="hidden" name="selection_name" value="{{key}}" />
+						<input type="submit" value="{{key}}" />
+					</form>
+				</td>
 			{% endfor %}
+			</tr>
+		</table>
 
 				<form method="get" action="/verifydata">
 					<input type="submit" value="Go Back" />
