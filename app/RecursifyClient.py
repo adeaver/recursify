@@ -23,13 +23,21 @@ class RecursifyClient():
         data_headers = {"grant_type":"authorization_code", "code":response_code, "redirect_uri":self.REDIRECT_URI, "client_id":self.CLIENT_ID, "client_secret":self.CLIENT_SECRET}
 
         try:
-            response = requests.post('https://accounts.spotify.com/api/token', data=response_code)
+            response = requests.post('https://accounts.spotify.com/api/token', data=data_headers)
+            print response
             response_data = response.json()
+            print response_data
             token = response_data['access_token']
         except:
             print "An error occurred attempting to get token"
 
         return token
+
+    def get_user_first_name(self):
+        if self.SP_CLIENT is not None:
+            return self.SP_CLIENT.current_user()['display_name'].split()[0]
+        print "An error occurred attempting to get user"
+        return ""
 
     def initialize_spotify_client(self, token):
         self.SP_CLIENT = spotipy.Spotify(auth=token)

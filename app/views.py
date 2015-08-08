@@ -17,6 +17,7 @@ def index():
 def verify():
     if request.method == "GET":
         if "code" in request.args:
+            print request.args["code"]
             token = client.get_access_token(request.args["code"])
             client.initialize_spotify_client(token)
         else:
@@ -24,5 +25,5 @@ def verify():
             return redirect(redirect_url)
 
         if client.is_verified():
-            return "Verified"
+            return render_template("verify.html", name=client.get_user_first_name())
     return "Bad Request"
