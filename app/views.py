@@ -27,3 +27,11 @@ def verify():
         if client.is_verified():
             return render_template("verify.html", name=client.get_user_first_name())
     return "Bad Request"
+
+@app.route('/selectartist', methods=['GET'])
+def select():
+    if request.method == "GET":
+        if "search_artist" in request.args:
+            print client.select_artist(request.args["search_artist"])
+            return "Good Request"
+    return "Bad Request"

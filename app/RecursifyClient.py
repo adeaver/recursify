@@ -61,22 +61,13 @@ class RecursifyClient():
                     continue
                 break
 
-            for index in range(len(get_artist['artists']['items'])):
-                print str(index+1) + ". " + get_artist['artists']['items'][index]['name']
-            
-            while True:
-                try:
-                    pullIndex = int(raw_input("Which artist would you like to see? "))
-                except:
-                    print "Invalid selection"
-                    continue
-                break
-
-            self.PLAYLIST_TITLE = "Recursify Playlist Based on " + artist_name
-            return get_artist['artists']['items'][pullIndex-1]['uri']
+            return {artist_info['name']:artist_info['uri'] for artist_info in get_artist['artists']['items']}
         else:
             print "Could not connect to Spotify Client"
             return "Error"
+
+    def set_playlist_title(self, artist_name):
+        self.PLAYLIST_TITLE = "Recursify Playlist Based on " + artist_name
 
     def get_all_related(self, artist_id, depth):
         if self.SP_CLIENT is not None:
