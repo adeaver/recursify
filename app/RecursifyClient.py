@@ -155,25 +155,25 @@ class RecursifyClient():
 
     def create_playlist(self, song_list):
         if self.SP_CLIENT is not None:
+            username = self.SP_CLIENT.current_user()['id']
             while True:
                 try:
-                    playlist = self.SP_CLIENT.user_playlist_create(self.USERNAME, self.PLAYLIST_TITLE, public=False)
+                    playlist = self.SP_CLIENT.user_playlist_create(username, self.PLAYLIST_TITLE, public=False)
                 except spotipy.client.SpotifyException:
                     time.sleep(.1)
                     continue
                 break
 
             playlist_uri = playlist['uri']
-
             while True:
                 try:
-                    self.SP_CLIENT.user_playlist_add_tracks(self.USERNAME, playlist_uri, song_list)
+                    self.SP_CLIENT.user_playlist_add_tracks(username, playlist_uri, song_list)
                 except spotipy.client.SpotifyException:
                     time.sleep(.1)
                     continue
                 break
 
-            print "Complete! Enjoy your new playlist"
+            return "Complete! Enjoy your new playlist"
 
         else:
-            print "Could not connect to Spotify Client"
+            return "Could not connect to Spotify Client"

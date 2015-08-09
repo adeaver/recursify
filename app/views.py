@@ -42,5 +42,18 @@ def select():
 def build():
     if request.method == "GET":
         if "selection_uri" in request.args and "selection_name" in request.args:
-            return request.args["selection_name"] + " -- " + request.args["selection_uri"]
+            client.set_playlist_title(request.args['selection_name'])
+            return render_template("build.html", artist_name=request.args["selection_name"],
+            artist_uri=request.args["selection_uri"])
+    return "Bad Request"
+
+@app.route('/complete', methods=['GET'])
+def complete():
+    if request.method == "GET":
+        if "uri" in request.args:
+            artists = client.get_all_related(request.args['uri'], 3)
+            new_artists = client.clean_shuffle_cut(artists, 30)
+            songs = client.create_song_list(new_artists, 100)
+            message = client.create_playlist(songs)
+            return message
     return "Bad Request"
