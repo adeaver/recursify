@@ -55,5 +55,5 @@ def complete():
             new_artists = client.clean_shuffle_cut(artists, 30)
             songs = client.create_song_list(new_artists, 100)
             message = client.create_playlist(songs)
-            return message
+            return render_template("complete.html", message=message)
     return "Bad Request"
