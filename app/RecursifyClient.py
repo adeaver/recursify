@@ -10,6 +10,7 @@ class RecursifyClient():
         self.ROOT_ARTIST_URI = None
         self.PLAYLIST_TITLE = None
         self.USERNAME = None
+        self.TIMEOUT = .5
         self.SCOPE = "playlist-modify-private user-library-read"
 
     def get_redirect_url(self):
@@ -57,7 +58,7 @@ class RecursifyClient():
                 try:
                     get_artist = self.SP_CLIENT.search(q='artist:' + artist_name, type='artist')
                 except spotipy.client.SpotifyException:
-                    time.sleep(.1)
+                    time.sleep(self.TIMEOUT)
                     continue
                 break
 
@@ -78,7 +79,7 @@ class RecursifyClient():
                     related_dict = self.SP_CLIENT.artist_related_artists(artist_id)
                     related = [artist['uri'] for artist in related_dict['artists']]
                 except spotipy.client.SpotifyException:
-                    time.sleep(.1)
+                    time.sleep(self.TIMEOUT)
                     continue
                 break
 
@@ -114,30 +115,40 @@ class RecursifyClient():
 
     def clean_tracks(self, track_data):
         tracks = []
-        for track in track_data:
-            uri = track['uri']
+
+        if len(track_data) > 0:
             while True:
                 try:
-                    if(self.SP_CLIENT.current_user_saved_tracks_contains('uri')[0] == False):
-                        tracks.append(uri)
+                    is_saved_list = self.SP_CLIENT.current_user_saved_tracks_contains(track_data)
                 except spotipy.client.SpotifyException:
-                    time.sleep(.1)
+                    print "Error on cleaning tracks! -- " + str(len(track_data))
+                    time.sleep(self.TIMEOUT * 2)
                     continue
                 break
+
+            for index in range(len(is_saved_list)):
+                if(is_saved_list[index] == False):
+                    tracks.append(track_data[index])
+
         return tracks
 
     def get_artist_tracks(self, artist_id):
+        print "Getting tracks for " + artist_id
         tracks = []
         if self.SP_CLIENT is not None:
             while True:
                 try:
                     top_tracks = self.SP_CLIENT.artist_top_tracks(artist_id)
                 except spotipy.client.SpotifyException:
-                    time.sleep(.1)
+                    print "Error on getting artist top tracks for " + artist_id
+                    time.sleep(self.TIMEOUT)
                     continue
                 break
 
             tracks = [track['uri'] for track in top_tracks['tracks']]
+            tracks = self.clean_tracks(tracks)
+
+            print "Clean tracks length: " + str(len(tracks))
         else:
             print "Could not connect to Spotify Client"
         
@@ -147,8 +158,10 @@ class RecursifyClient():
         song_list = []
 
         for artist in artist_list:
+            print "Current Artist: " + artist
             song_list += self.get_artist_tracks(artist)
 
+        print "Song list length: " + str(len(song_list))
         new_song_list = self.clean_shuffle_cut(song_list, amount)
 
         return new_song_list
@@ -160,7 +173,7 @@ class RecursifyClient():
                 try:
                     playlist = self.SP_CLIENT.user_playlist_create(username, self.PLAYLIST_TITLE, public=False)
                 except spotipy.client.SpotifyException:
-                    time.sleep(.1)
+                    time.sleep(self.TIMEOUT)
                     continue
                 break
 
@@ -169,7 +182,7 @@ class RecursifyClient():
                 try:
                     self.SP_CLIENT.user_playlist_add_tracks(username, playlist_uri, song_list)
                 except spotipy.client.SpotifyException:
-                    time.sleep(.1)
+                    time.sleep(self.TIMEOUT)
                     continue
                 break
 

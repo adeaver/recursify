@@ -28,7 +28,7 @@ def verify():
             redirect_url = client.get_redirect_url()
             return redirect(redirect_url)
 
-    return "Bad Request"
+    return render_template("badrequest.html")
 
 @app.route('/selectartist', methods=['GET'])
 def select():
@@ -36,7 +36,7 @@ def select():
         if "search_artist" in request.args:
             artists = client.select_artist(request.args["search_artist"])
             return render_template("select.html", artists=artists)
-    return "Bad Request"
+    return render_template("badrequest.html")
 
 @app.route('/buildplaylist', methods=['GET'])
 def build():
@@ -45,15 +45,15 @@ def build():
             client.set_playlist_title(request.args['selection_name'])
             return render_template("build.html", artist_name=request.args["selection_name"],
             artist_uri=request.args["selection_uri"])
-    return "Bad Request"
+    return render_template("badrequest.html")
 
 @app.route('/complete', methods=['GET'])
 def complete():
     if request.method == "GET":
         if "uri" in request.args:
             artists = client.get_all_related(request.args['uri'], 3)
-            new_artists = client.clean_shuffle_cut(artists, 30)
+            new_artists = client.clean_shuffle_cut(artists, 300)
             songs = client.create_song_list(new_artists, 100)
             message = client.create_playlist(songs)
             return render_template("complete.html", message=message)
-    return "Bad Request"
+    return render_template("badrequest.html")
